@@ -13,6 +13,7 @@ pipeline {
   stages {
     stage('Build') {
       steps {
+        sh 'chmod +x ./springboot-app/mvnw'
         sh "./${APP_PATH}/mvnw clean package -DskipTests"
       }
     }
@@ -32,7 +33,9 @@ pipeline {
     stage('SonarQube Analysis') {
       steps {
         withSonarQubeEnv("${SONARQUBE_ENV}") {
-          withCredentials([string(credentialsId: "${SONAR_CREDENTIAL_ID}", variable: 'SONAR_TOKEN')]) {
+          withCredentials([
+            string(credentialsId: "${SONAR_CREDENTIAL_ID}", variable: 'SONAR_TOKEN')
+          ]) {
             sh "./${APP_PATH}/mvnw verify sonar:sonar -Dsonar.token=$SONAR_TOKEN"
           }
         }
@@ -41,8 +44,12 @@ pipeline {
 
     stage('Docker Push') {
       steps {
-        withCredentials([usernamePassword
-        (credentialsId: 'jfrog-creds-id', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')
+        withCredentials([
+          usernamePassword(
+            credentialsId: 'jfrog-creds-id',
+            usernameVariable: 'USERNAME',
+            passwordVariable: 'PASSWORD'
+          )
         ]) {
           sh "docker login -u $USERNAME -p $PASSWORD trial30upoh.jfrog.io"
           sh "docker tag ${IMAGE_NAME}:${IMAGE_TAG} trial30upoh.jfrog.io/docker-trial/${IMAGE_NAME}:${IMAGE_TAG}"
