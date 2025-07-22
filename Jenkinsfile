@@ -13,14 +13,18 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        sh 'chmod +x ./springboot-app/mvnw'
-        sh "./${APP_PATH}/mvnw clean package -DskipTests"
+        dir("${APP_PATH}") {
+          sh 'chmod +x mvnw'
+          sh './mvnw clean package -DskipTests'
+        }
       }
     }
 
     stage('Test') {
       steps {
-        sh "./${APP_PATH}/mvnw test"
+        dir("${APP_PATH}") {
+          sh './mvnw test'
+        }
       }
     }
 
@@ -32,11 +36,13 @@ pipeline {
 
     stage('SonarQube Analysis') {
       steps {
-        withSonarQubeEnv("${SONARQUBE_ENV}") {
-          withCredentials([
-            string(credentialsId: "${SONAR_CREDENTIAL_ID}", variable: 'SONAR_TOKEN')
-          ]) {
-            sh "./${APP_PATH}/mvnw verify sonar:sonar -Dsonar.token=$SONAR_TOKEN"
+        dir("${APP_PATH}") {
+          withSonarQubeEnv("${SONARQUBE_ENV}") {
+            withCredentials([
+              string(credentialsId: "${SONAR_CREDENTIAL_ID}", variable: 'SONAR_TOKEN')
+            ]) {
+              sh './mvnw verify sonar:sonar -Dsonar.token=$SONAR_TOKEN'
+            }
           }
         }
       }
