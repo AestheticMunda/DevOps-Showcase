@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: devops-showcase
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/AestheticMunda/devops-showcase.git
+    targetRevision: HEAD
+    path: helm-chart
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: devops-showcase
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true

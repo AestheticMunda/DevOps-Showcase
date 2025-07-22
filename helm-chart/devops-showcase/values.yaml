@@ -1,0 +1,43 @@
+image:
+  repository: trial30upoh.jfrog.io/docker-trial/devops-showcase-app
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+imagePullSecrets:
+  - name: jfrog-docker-secret
+
+service:
+  type: NodePort
+  port: 8080
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+  name: ""
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
