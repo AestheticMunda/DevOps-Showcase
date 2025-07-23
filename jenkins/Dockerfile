@@ -1,4 +1,12 @@
 FROM jenkins/jenkins:lts
+
 USER root
-RUN apt-get update && apt-get install -y docker.io
+
+# Install Docker CLI
+RUN apt-get update && \
+    apt-get install -y docker.io && \
+    apt-get clean
+
+# Optional: install any other tools here (e.g., kubectl, helm)
+
 USER jenkins
