@@ -7,6 +7,7 @@ pipeline {
     DOCKERFILE_PATH = 'docker/Dockerfile'
     SONARQUBE_ENV = 'SonarQube'
     SONAR_CREDENTIAL_ID = 'sonar-token'
+    SONAR_PROJECT_KEY = 'userservice'
     APP_PATH = 'springboot-app'
   }
 
@@ -45,7 +46,7 @@ pipeline {
         dir("${APP_PATH}") {
           withSonarQubeEnv("${SONARQUBE_ENV}") {
             withCredentials([string(credentialsId: "${SONAR_CREDENTIAL_ID}", variable: 'SONAR_TOKEN')]) {
-              sh './mvnw verify sonar:sonar -Dsonar.token=$SONAR_TOKEN'
+            sh "./mvnw clean verify sonar:sonar -Dsonar.projectKey=$SONAR_PROJECT_KEY -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.token=$SONAR_TOKEN"
             }
           }
         }
